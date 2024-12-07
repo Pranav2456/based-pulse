@@ -11,10 +11,13 @@
   "dependencies": {
     "@anon-aadhaar/react": "^2.4.2",
     "@coinbase/wallet-sdk": "^4.2.4",
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.2",
     "@tanstack/react-query": "^5.62.3",
+    "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
