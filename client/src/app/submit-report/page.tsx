@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader, Paperclip, ArrowUpRight } from "lucide-react";
+import { Loader, Paperclip, ArrowUpRight } from 'lucide-react';
 import imageCompression from "browser-image-compression";
+import { useAccount } from "wagmi";
+import { useCapabilities, useWriteContracts } from 'wagmi/experimental'
+import { contractABI, CONTRACT_ADDRESS } from "@/lib/contract";
+import lighthouse from "@lighthouse-web3/sdk";
 
 const SubmitReport = () => {
   const [fileBase64, setFileBase64] = useState<string | null>(null);
@@ -18,8 +22,46 @@ const SubmitReport = () => {
   const [processing, setProcessing] = useState(false);
   const [lat, setLat] = useState<number | null>(null);
   const [long, setLong] = useState<number | null>(null);
+  const [id, setId] = useState<string | undefined>(undefined);
   const [gpsProcessing, setGpsProcessing] = useState(false);
-  
+  const [submittedData, setSubmittedData] = useState<any>(null);
+  const account = useAccount();
+  const { writeContracts } = useWriteContracts({
+    mutation: { onSuccess: (id) => setId(id) },
+  });
+  const { data: availableCapabilities } = useCapabilities({
+    account: account.address,
+  });
+
+  const capabilities = useMemo(() => {
+    if (!availableCapabilities || !account.chainId) return {};
+    const capabilitiesForChain = availableCapabilities[account.chainId];
+    if (
+      capabilitiesForChain["paymasterService"] &&
+      capabilitiesForChain["paymasterService"].supported
+    ) {
+      return {
+        paymasterService: {
+          url: `https://api.developer.coinbase.com/rpc/v1/base/LyT_0lKAx57z6hEjpTxTeq9ToxFOtlNv`,
+        },
+      };
+    }
+    return {};
+  }, [availableCapabilities, account.chainId]);
+
+  const base64ToFile = (base64: string, filename: string) => {
+    const arr = base64.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : '';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -116,7 +158,7 @@ const SubmitReport = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/submit-content`,
+        `http://localhost:8080/api/submit-content`,
         {
           method: "POST",
           body: formData,
@@ -126,11 +168,22 @@ const SubmitReport = () => {
       const data = await response.json();
 
       if (response.ok && data.isMatching) {
+        const sevScore = Math.round(data.severity_score / 2);
+        const category = data?.category || "Others";
+        const details = JSON.stringify({ title, description });
+        const location = JSON.stringify({ lat, long });
+
+        // Prepare the file for upload
+        const file = base64ToFile(fileBase64, `${Date.now()}.jpg`);
+        const uploadResp = await lighthouse.upload([file], '1d7a4666.078c09b786c844d8ab70d56054d33836');
+        const cID = uploadResp.data.Hash;
+
+        setSubmittedData({ details, location, cID, category, sevScore });
+
         toast({
           title: "Success", 
-          description: "Report submitted successfully!",
+          description: "Report content submitted successfully!",
         });
-        router.push("/dashboard");
       } else {
         toast({
           title: "Error",
@@ -146,6 +199,37 @@ const SubmitReport = () => {
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleBlockchainSubmit = () => {
+    if (!submittedData) {
+      toast({
+        title: "Error",
+        description: "Please submit the report content first",
+      });
+      return;
+    }
+
+    const { details, location, cID, category, sevScore } = submittedData;
+
+    writeContracts({
+      contracts: [
+        {
+          address: CONTRACT_ADDRESS,
+          abi: contractABI as any,
+          functionName: "submitReport",
+          args: [details, location, cID, category, sevScore],
+        },
+      ],
+      capabilities,
+    });
+
+    toast({
+      title: "Success",
+      description: "Report submitted to blockchain",
+    });
+
+    router.push("/dashboard");
   };
 
   return (
@@ -228,12 +312,19 @@ const SubmitReport = () => {
                 <Loader className="animate-spin mr-2" />
               ) : (
                 <>
-                  Submit Report
+                  Submit Report Content
                   <ArrowUpRight className="ml-2" />
                 </>
               )}
             </Button>
           </form>
+          <Button 
+            onClick={handleBlockchainSubmit}
+            className="w-full mt-4"
+            disabled={!submittedData}
+          >
+            Submit Report to Blockchain
+          </Button>
         </CardContent>
       </Card>
     </div>
@@ -241,3 +332,4 @@ const SubmitReport = () => {
 };
 
 export default SubmitReport;
+

@@ -1,15 +1,25 @@
 "use client"
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Star, Gift, TrendingUp } from 'lucide-react'
+import { Star, Gift, TrendingUp, Loader } from 'lucide-react'
+import { CONTRACT_ADDRESS, contractABI } from '@/lib/contract'
+import { useReadContract } from 'wagmi'
 
 export default function RewardPoints() {
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const router = useRouter()
+  const [rewardPoints, setRewardPoints] = useState<number>(0)
+
+  const { data: userData, isLoading, isError } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: contractABI,
+    functionName: 'getUserProfile',
+    args: [address],
+  })
 
   useEffect(() => {
     if (!isConnected) {
@@ -17,12 +27,37 @@ export default function RewardPoints() {
     }
   }, [isConnected, router])
 
-  const rewardPoints = 1250
+  useEffect(() => {
+    if (userData && Array.isArray(userData) && userData.length > 0) {
+      setRewardPoints(Number(userData[0]))
+    }
+  }, [userData])
+
   const rewardHistory = [
     { id: 1, action: 'Report Submitted', points: 50, date: '2023-12-05' },
     { id: 2, action: 'Comment Upvoted', points: 5, date: '2023-12-04' },
     { id: 3, action: 'Report Verified', points: 100, date: '2023-12-03' },
   ]
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center">
+        <Loader className="animate-spin h-8 w-8 text-blue-500" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-4">
+            <p className="text-red-600">Failed to load reward points. Please try again later.</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -5,13 +5,14 @@ import { Bell, Search, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import React, { useCallback, useEffect } from 'react';
-import { useConnect, useAccount } from 'wagmi';
+import { useConnect, useAccount, useDisconnect } from 'wagmi';
 import { CoinbaseWalletLogo } from './ui/coinbaseWalletLogo';
 
 export default function Header() {
   const router = useRouter();
   const { connectors, connect, isSuccess } = useConnect();
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
  
   const createWallet = useCallback(() => {
     const coinbaseWalletConnector = connectors.find(
@@ -56,8 +57,31 @@ export default function Header() {
             <User className="h-5 w-5" />
             <span className="sr-only">Profile</span>
           </Button>
-          {!isConnected && (
-            <Button className="vibrant-button font-semibold flex items-center" onClick={createWallet}>
+          {isConnected ? (
+            <>
+              <Link href="/dashboard">
+                <Button variant="ghost" size="icon" className="text-blue-500 hover:text-purple-500 hover:bg-purple-50">
+                  <User className="h-5 w-5" />
+                  <span className="sr-only">Dashboard</span>
+                </Button>
+              </Link>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">
+                  {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ''}
+                </span>
+                <Button 
+                  className="vibrant-button font-semibold" 
+                  onClick={() => disconnect()}
+                >
+                  Disconnect
+                </Button>
+              </div>
+            </>
+          ) : (
+            <Button 
+              className="vibrant-button font-semibold flex items-center" 
+              onClick={createWallet}
+            >
               <CoinbaseWalletLogo />
               <span className="ml-2">Create Wallet</span>
             </Button>

@@ -46,7 +46,7 @@ export default function VerifyPage() {
                 <p className="text-center text-gray-600">
                   To ensure the integrity of our community, we require user verification. Please complete the Anon Aadhaar verification process below.
                 </p>
-                <LogInWithAnonAadhaar nullifierSeed={1234}/>
+                <LogInWithAnonAadhaar nullifierSeed={1}/>
               </>
             ) : (
               <>

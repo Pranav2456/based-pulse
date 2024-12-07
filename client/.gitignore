@@ -4,6 +4,9 @@
 /node_modules
 /.pnp
 .pnp.js
+/public/aadhaar-verifier.wasm
+/public/circuit_final.zkey
+/public/vkey.json
 
 .env.local
 # testing
