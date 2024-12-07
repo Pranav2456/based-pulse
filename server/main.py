@@ -3,11 +3,13 @@ from flask_cors import CORS
 from submit_content import handle_submit_content
 # from analyze import handle_analyze
 from verify_content import verify_content_handler
-
+from twitter_api import twitter_bp
 
 app = Flask(__name__)
 CORS(app)
 
+# Register the Twitter blueprint
+app.register_blueprint(twitter_bp, url_prefix='/api')
 # New Report 
 @app.route('/api/submit-content', methods=['POST'])
 def submit_content():
