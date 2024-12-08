@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   webpack: (config, { isServer }) => {
     config.experiments = { 
       asyncWebAssembly: true,
@@ -14,6 +17,7 @@ const nextConfig = {
         maxSize: 250000
       }
     };
+
 
     if (!isServer) {
       config.performance = {

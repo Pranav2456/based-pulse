@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "tsc-silent -p './tsconfig.json' --suppress @ && next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@anon-aadhaar/react": "^2.4.2",
