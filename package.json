@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "tsc-silent": "^1.2.2"
+  }
+}
