@@ -30,6 +30,7 @@
     "snarkjs": "^0.7.5",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "tsc-silent": "^1.2.2",
     "wagmi": "^2.13.4"
   },
   "devDependencies": {
