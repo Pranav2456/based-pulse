@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import React, { useCallback, useEffect } from 'react';
 import { useConnect, useAccount, useDisconnect } from 'wagmi';
 import { CoinbaseWalletLogo } from './ui/coinbaseWalletLogo';
+import Image from 'next/image';
 
 export default function Header() {
   const router = useRouter();
@@ -34,9 +35,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 bg-white border-b border-blue-100 shadow-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold vibrant-gradient">
-          Aware
-        </Link>
+      <Link href="/" className="text-2xl font-bold vibrant-gradient">
+        <Image
+          src="/Basedpulse-green.png"
+          alt="Logo"
+          width={50}
+          height={50}
+        />
+      </Link>
         <div className="flex items-center space-x-4">
           <div className="hidden md:block">
             <Input

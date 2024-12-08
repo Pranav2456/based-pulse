@@ -15,7 +15,7 @@ export default function Home() {
     <div className="container mx-auto px-4 py-16">
       <section className="mb-16 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 vibrant-gradient">
-          Welcome to Aware
+          Welcome to Based Pulse
         </h1>
         <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-600">
           Join our vibrant community in making a difference. Report local issues, track progress, and earn exciting rewards for your contributions!

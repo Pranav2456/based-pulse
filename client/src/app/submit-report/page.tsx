@@ -200,8 +200,81 @@ const SubmitReport = () => {
       setProcessing(false);
     }
   };
+  
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+    
+  //   if (!title || !description || !fileBase64) {
+  //     toast({
+  //       title: "Error", 
+  //       description: "Please fill in all required fields"
+  //     });
+  //     return;
+  //   }
+  
+  //   setProcessing(true);
+  
+  //   const formData = new FormData();
+  //   formData.append("proof_text", `${title} - ${description}`);
+  //   formData.append("proof_image", fileBase64);
+  
+  //   try {
+  //     // Submit form data
+  //     const response = await fetch("http://localhost:8080/api/submit-content", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  
+  //     const data = await response.json();
+  
+  //     if (response.ok) {
+  //       setSubmittedData(data);
+        
+  //       // Post tweet after successful submission
+  //       try {
+  //         const tweetResponse = await fetch("http://localhost:8080/api/tweet", {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ text: description }),
+  //         });
+  
+  //         if (!tweetResponse.ok) {
+  //           console.error("Failed to post tweet");
+  //         }
 
-  const handleBlockchainSubmit = () => {
+  //         toast({
+  //           title: "Success",
+  //           description: "Report tweeted successfully!",
+  //         });
+
+  //       } catch (error) {
+  //         console.error("Error posting tweet:", error);
+  //         throw new Error(data.error || "Failed to tweet");
+
+  //       }
+  
+  //       toast({
+  //         title: "Success",
+  //         description: "Report submitted successfully!",
+  //       });
+        
+  //     } else {
+  //       throw new Error(data.error || "Failed to submit report");
+  //     }
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error",
+  //       description: error instanceof Error ? error.message : "An error occurred",
+  //     });
+  //   } finally {
+  //     setProcessing(false);
+  //   }
+  // };
+
+
+  const handleBlockchainSubmit = async () => {
     if (!submittedData) {
       toast({
         title: "Error",
@@ -209,9 +282,10 @@ const SubmitReport = () => {
       });
       return;
     }
-
+  
     const { details, location, cID, category, sevScore } = submittedData;
-
+  
+    // Submit the report to the blockchain
     writeContracts({
       contracts: [
         {
@@ -223,15 +297,41 @@ const SubmitReport = () => {
       ],
       capabilities,
     });
-
-    toast({
-      title: "Success",
-      description: "Report submitted to blockchain",
-    });
-
+  
+    try {
+      // Make the API call to /api/tweet
+      const response = await fetch(`http://localhost:8080/api/tweet`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: description }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Report submitted and tweeted successfully!",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to post tweet",
+        });
+      }
+    } catch (error) {
+      console.error("Error posting tweet:", error);
+      toast({
+        title: "Error",
+        description: "Failed to post tweet",
+      });
+    }
+  
+    // Navigate to the dashboard
     router.push("/dashboard");
   };
-
   return (
     <div className="container mx-auto px-4 py-16">
       <Card className="max-w-2xl mx-auto">

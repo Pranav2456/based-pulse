@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4 vibrant-gradient">About Aware</h3>
             <p className="text-sm text-gray-600">
-              Aware is a vibrant, community-driven platform for reporting and tracking local issues. Together, we can make our communities better and more colorful!
+              Based Pulse is a vibrant, community-driven platform for reporting and tracking local issues. Together, we can make our communities better and more colorful!
             </p>
           </div>
           <div>
