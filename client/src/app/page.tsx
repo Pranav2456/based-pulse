@@ -21,7 +21,7 @@ export default function Home() {
           Join our vibrant community in making a difference. Report local issues, track progress, and earn exciting rewards for your contributions!
         </p>
         <Button asChild size="lg" className="vibrant-button text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-          <Link href="/submit-report">Submit a Report</Link>
+          <Link href="/dashboard">Submit a Report</Link>
         </Button>
       </section>
 

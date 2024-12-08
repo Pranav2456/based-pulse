@@ -1,17 +1,16 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { LogInWithAnonAadhaar, useAnonAadhaar } from '@anon-aadhaar/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 
-
 export default function VerifyPage() {
   const [anonAadhaar] = useAnonAadhaar()
-  const [isVerified, setIsVerified] = useState(false)
   const { isConnected } = useAccount()
   const router = useRouter()
+  const [showAnonAadhaar, setShowAnonAadhaar] = useState(true)
 
   useEffect(() => {
     if (!isConnected) {
@@ -19,18 +18,27 @@ export default function VerifyPage() {
     }
   }, [isConnected, router])
 
+  const redirectToDashboard = useCallback(() => {
+    router.push('/dashboard')
+  }, [router])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowAnonAadhaar(false)
+      redirectToDashboard()
+    }, 40000)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [redirectToDashboard])
+
   useEffect(() => {
     if (anonAadhaar.status === 'logged-in') {
-        console.log("Anon aadhar status: ", anonAadhaar.status)
-      setIsVerified(true)
+      setShowAnonAadhaar(false)
+      redirectToDashboard()
     }
-  }, [anonAadhaar])
-
-  const handleVerificationSuccess = () => {
-    setIsVerified(true)
-    // Here you can add logic to store the verification status
-    router.push('/dashboard')
-  }
+  }, [anonAadhaar.status, redirectToDashboard])
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -41,22 +49,18 @@ export default function VerifyPage() {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="flex flex-col items-center space-y-6">
-            {!isVerified ? (
+            {showAnonAadhaar && (
               <>
                 <p className="text-center text-gray-600">
                   To ensure the integrity of our community, we require user verification. Please complete the Anon Aadhaar verification process below.
                 </p>
-                <LogInWithAnonAadhaar nullifierSeed={1}/>
+                <LogInWithAnonAadhaar nullifierSeed={1234} fieldsToReveal={["revealPinCode", "revealState"]}/>
               </>
-            ) : (
-              <>
-                <p className="text-center text-green-600 font-semibold">
-                  Verification successful! Thank you for verifying your identity.
-                </p>
-                <Button className="vibrant-button" onClick={() => window.location.href = '/'}>
-                  Continue to Dashboard
-                </Button>
-              </>
+            )}
+            {!showAnonAadhaar && (
+              <p className="text-center text-green-600 font-semibold">
+                Verification process completed. Redirecting to dashboard...
+              </p>
             )}
           </div>
         </CardContent>
@@ -64,4 +68,3 @@ export default function VerifyPage() {
     </div>
   )
 }
-

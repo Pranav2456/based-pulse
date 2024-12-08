@@ -27,14 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-background`}>
-        <AnonAadhaarProvider
-          _useTestAadhaar={true}
-          _artifactslinks={{
-            zkey_url: "circuit_final.zkey",
-            vkey_url: "vkey.json",
-            wasm_url: "aadhaar-verifier.wasm",
-          }}
-        >
+        <AnonAadhaarProvider _useTestAadhaar={true}>
           <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
               <ThemeProvider

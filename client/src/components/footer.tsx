@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-4 vibrant-gradient">About Aware</h3>
+            <h3 className="text-lg font-semibold mb-4 vibrant-gradient">About Based Pulse</h3>
             <p className="text-sm text-gray-600">
               Based Pulse is a vibrant, community-driven platform for reporting and tracking local issues. Together, we can make our communities better and more colorful!
             </p>
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-blue-200 text-center text-sm">
-          <p className="vibrant-gradient inline-block">&copy; {new Date().getFullYear()} Aware. All rights reserved.</p>
+          <p className="vibrant-gradient inline-block">&copy; {new Date().getFullYear()} Based Pulse. All rights reserved.</p>
         </div>
       </div>
     </footer>

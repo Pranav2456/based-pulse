@@ -59,10 +59,6 @@ export default function Header() {
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
           </Button>
-          <Button variant="ghost" size="icon" className="text-blue-500 hover:text-purple-500 hover:bg-purple-50">
-            <User className="h-5 w-5" />
-            <span className="sr-only">Profile</span>
-          </Button>
           {isConnected ? (
             <>
               <Link href="/dashboard">
@@ -89,7 +85,7 @@ export default function Header() {
               onClick={createWallet}
             >
               <CoinbaseWalletLogo />
-              <span className="ml-2">Create Wallet</span>
+              <span className="ml-2">Connect Wallet</span>
             </Button>
           )}
         </div>

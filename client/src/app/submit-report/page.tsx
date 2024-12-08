@@ -158,7 +158,7 @@ const SubmitReport = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/submit-content`,
+        `https://ethindia-24.onrender.com/api/submit-content`,
         {
           method: "POST",
           body: formData,
@@ -300,7 +300,7 @@ const SubmitReport = () => {
   
     try {
       // Make the API call to /api/tweet
-      const response = await fetch(`http://localhost:8080/api/tweet`, {
+      const response = await fetch(`https://ethindia-24.onrender.com/api/tweet`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
