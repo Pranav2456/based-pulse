@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsc-silent -p './tsconfig.json' --suppress @ && next build",
     "start": "next start",
     "lint": "next lint"
   },
